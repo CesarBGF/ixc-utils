@@ -36,26 +36,24 @@ pip install ixc-utils
 ### Requisições à API
 
 ```python
-from ixc_utils import requisicao_ixc, mapeamento
+from ixc_utils import configure, requisicao_ixc, mapeamento
 
 # Configurar credenciais
-API_URL = "https://seu_dominio/webservice/v1"
-API_KEY = "sua-chave-api"
+configure(
+    api_url="https://SEU_DOMINIO/webservice/v1",
+    api_key="sua-chave-api"
+)
 
 # Fazer uma requisição simples
 df = requisicao_ixc(
-    rota="cliente",
-    api_url=API_URL,
-    api_key=API_KEY
+    rota="cliente"
 )
 
 # Criar mapeamento
 clientes_map = mapeamento(
     rota="cliente",
     id="id",
-    traducao="nome",
-    api_url=API_URL,
-    api_key=API_KEY
+    traducao="nome"
 )
 ```
 
@@ -69,9 +67,7 @@ ids = [1, 2, 3, 4, 5]
 df = requisicao_ixc_especifica(
     rota="cliente_contrato",
     ids=ids,
-    tabela="id",
-    api_url=API_URL,
-    api_key=API_KEY
+    tabela="id"
 )
 ```
 
@@ -89,9 +85,7 @@ filtro = grid_param(
 # Usar o filtro na requisição
 df = requisicao_ixc(
     rota="cliente_contrato",
-    query=filtro,
-    api_url=API_URL,
-    api_key=API_KEY
+    query=filtro
 )
 ```
 
@@ -166,4 +160,3 @@ César Bragança - cesarbgf.contato@gmail.com
 
 - [Repositório GitHub](https://github.com/cesarbgf/ixc-utils)
 - [PyPI](https://pypi.org/cesarbgf/ixc-utils/)
-- [Documentação](https://github.com/cesarbgf/ixc-utils/wiki)

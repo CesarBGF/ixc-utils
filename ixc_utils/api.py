@@ -10,6 +10,35 @@ from pandas import json_normalize
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
+_API_URL = None
+_API_KEY = None
+
+
+def configure(api_url, api_key):
+    """
+    Configura as credenciais da API IXC globalmente.
+    
+    Após chamar esta função, você não precisa passar api_url e api_key
+    em cada requisição.
+    
+    Args:
+        api_url (str): URL base da API IXC
+        api_key (str): Chave de autorização da API
+        
+    Example:
+        >>> from ixc_utils import configure
+        >>> configure(
+        ...     api_url="https://sua-api.ixcsoft.com.br/webservice/v1",
+        ...     api_key="sua-chave-api"
+        ... )
+        >>> # Agora pode usar as funções sem passar api_url e api_key
+        >>> df = requisicao_ixc("cliente")
+    """
+    global _API_URL, _API_KEY
+    _API_URL = api_url
+    _API_KEY = api_key
+
+
 def mapeamento(rota, id, traducao, api_url=None, api_key=None):
     """
     Cria um dicionário de mapeamento a partir de uma rota da API IXC.
@@ -18,14 +47,20 @@ def mapeamento(rota, id, traducao, api_url=None, api_key=None):
         rota (str): Rota da API IXC
         id (str): Campo que será usado como chave do dicionário
         traducao (str): Campo que será usado como valor do dicionário
-        api_url (str, optional): URL base da API IXC
-        api_key (str, optional): Chave de autorização da API
+        api_url (str, optional): URL base da API IXC. Se None, usa o valor configurado.
+        api_key (str, optional): Chave de autorização da API. Se None, usa o valor configurado.
         
     Returns:
         dict: Dicionário com o mapeamento id -> traducao
     """
+    api_url = api_url or _API_URL
+    api_key = api_key or _API_KEY
+    
     if api_url is None or api_key is None:
-        raise ValueError("api_url e api_key são obrigatórios")
+        raise ValueError(
+            "api_url e api_key são obrigatórios. "
+            "Use configure(api_url, api_key) ou passe como parâmetros."
+        )
     
     url = f'{api_url}/{rota}'
     
@@ -59,14 +94,20 @@ def requisicao_ixc(rota, query='[]', api_url=None, api_key=None):
     Args:
         rota (str): Rota da API IXC
         query (str, optional): Parâmetros de filtro em formato JSON. Padrão: '[]'
-        api_url (str, optional): URL base da API IXC
-        api_key (str, optional): Chave de autorização da API
+        api_url (str, optional): URL base da API IXC. Se None, usa o valor configurado.
+        api_key (str, optional): Chave de autorização da API. Se None, usa o valor configurado.
         
     Returns:
         pd.DataFrame: DataFrame com os registros retornados
     """
+    api_url = api_url or _API_URL
+    api_key = api_key or _API_KEY
+    
     if api_url is None or api_key is None:
-        raise ValueError("api_url e api_key são obrigatórios")
+        raise ValueError(
+            "api_url e api_key são obrigatórios. "
+            "Use configure(api_url, api_key) ou passe como parâmetros."
+        )
     
     url = f'{api_url}/{rota}'
     
@@ -107,14 +148,20 @@ def requisicao_ixc_especifica(rota, ids, tabela, query='[]', max_workers=30,
         query (str, optional): Parâmetros adicionais de filtro. Padrão: '[]'
         max_workers (int, optional): Número de threads para requisições paralelas. Padrão: 30
         estrategia (str, optional): Forçar estratégia 'bulk' ou 'lotes'. Padrão: None (automático)
-        api_url (str, optional): URL base da API IXC
-        api_key (str, optional): Chave de autorização da API
+        api_url (str, optional): URL base da API IXC. Se None, usa o valor configurado.
+        api_key (str, optional): Chave de autorização da API. Se None, usa o valor configurado.
         
     Returns:
         pd.DataFrame: DataFrame com os registros encontrados
     """
+    api_url = api_url or _API_URL
+    api_key = api_key or _API_KEY
+    
     if api_url is None or api_key is None:
-        raise ValueError("api_url e api_key são obrigatórios")
+        raise ValueError(
+            "api_url e api_key são obrigatórios. "
+            "Use configure(api_url, api_key) ou passe como parâmetros."
+        )
     
     inicio = time.time()
     if isinstance(ids, str):
